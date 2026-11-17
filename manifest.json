@@ -1,0 +1,17 @@
+{
+  "name": "Altın2 - Gram Altın Takip",
+  "short_name": "Altın2",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#10151d",
+  "theme_color": "#10151d",
+  "lang": "tr",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10151d">
+<link rel="manifest" href="manifest.json">
+<title>Altın2</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#10151d;color:#f5f7fa;font-family:Arial,sans-serif;min-height:100vh;display:grid;place-items:center;padding:22px}
+main{width:100%;max-width:440px;background:#202a38;border:1px solid #344153;border-radius:24px;padding:26px 22px;box-shadow:0 18px 50px #0005}
+header{display:flex;justify-content:space-between;align-items:center}h1{font-size:22px;margin:0;color:#f4c542}.pill{font-size:12px;color:#16c784;background:#123b32;padding:7px 11px;border-radius:30px}
+.label{margin-top:38px;color:#aab5c5;font-size:13px;letter-spacing:1px}.price{font-size:clamp(38px,11vw,54px);font-weight:750;color:#f4c542;margin:12px 0 8px;white-space:nowrap}.unit{color:#aab5c5;font-size:14px}
+.line{height:1px;background:#394657;margin:25px 0}.row{display:flex;justify-content:space-between;margin:12px 0;font-size:14px}.row span:first-child{color:#aab5c5}.row strong{font-variant-numeric:tabular-nums}
+.status{margin-top:24px;color:#9aa8ba;font-size:12px;text-align:center;line-height:1.6}button{width:100%;border:0;border-radius:12px;background:#f4c542;color:#171b20;padding:14px;font-size:15px;font-weight:700;margin-top:22px}.note{font-size:11px;color:#8794a5;line-height:1.5;margin-top:16px;text-align:center}
+</style>
+</head>
+<body><main>
+<header><h1>🥇 ALTIN2</h1><span class="pill" id="live">BAĞLANIYOR</span></header>
+<div class="label">GRAM ALTIN · TEORİK SPOT</div><div class="price" id="price">--,-- TL</div><div class="unit">24 ayar · 1 gram</div>
+<div class="line"></div>
+<div class="row"><span>Ons altın</span><strong id="ons">-- USD</strong></div>
+<div class="row"><span>Dolar / TL</span><strong id="usd">-- TL</strong></div>
+<div class="row"><span>Son veri zamanı</span><strong id="time">--:--:--</strong></div>
+<button onclick="refresh()">ŞİMDİ GÜNCELLE</button><div class="status" id="status">Piyasa verisi bekleniyor…</div>
+<div class="note">Gram fiyat, ons altın ve USD/TRY kurundan hesaplanan teorik spot değerdir; kuyumcu alış/satış fiyatı değildir. Veri kaynaklarının güncelleme sıklığına bağlıdır.</div>
+</main>
+<script>
+async function refresh(){const status=document.getElementById('status');try{
+const [a,b]=await Promise.all([fetch('https://api.gold-api.com/price/XAU',{cache:'no-store'}),fetch('https://open.er-api.com/v6/latest/USD',{cache:'no-store'})]);
+if(!a.ok||!b.ok)throw Error();const g=await a.json(),c=await b.json();const oz=Number(g.price),rate=Number(c.rates.TRY);if(!Number.isFinite(oz)||!Number.isFinite(rate))throw Error();
+const f=n=>n.toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2});document.getElementById('price').textContent=f(oz/31.1034768*rate)+' TL';document.getElementById('ons').textContent='$'+f(oz);document.getElementById('usd').textContent=f(rate)+' TL';document.getElementById('time').textContent=new Date().toLocaleTimeString('tr-TR');document.getElementById('live').textContent='VERİ ALINDI';status.textContent='Son başarılı veri alımı: '+new Date().toLocaleString('tr-TR');
+}catch(e){document.getElementById('live').textContent='BAĞLANTI YOK';status.textContent='Veri alınamadı. İnternetini kontrol et; tekrar denenecek.'}}
+refresh();setInterval(refresh,5000);
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
+</script></body></html>
